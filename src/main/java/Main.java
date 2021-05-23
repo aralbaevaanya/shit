@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        File source = new File("src/main/java/example3.java");
+        File source = new File("src/main/java/example4.java");
         TypeSolver typeSolver = new CombinedTypeSolver();
 
         JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
