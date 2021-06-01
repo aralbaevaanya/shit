@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        File source = new File("src/main/java/example4.java");
+        File source = new File(args[0]);
         TypeSolver typeSolver = new CombinedTypeSolver();
 
         JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
@@ -24,11 +24,8 @@ public class Main {
 
         var Node = cu.findRootNode();
         ASTHelper astHelper = new ASTHelper(Node);
-        while (astHelper.queue.size() > 0) {
-            astHelper.process(astHelper.queue.poll());
-        }
+        astHelper.process();
         astHelper.print();
-
     }
 
 

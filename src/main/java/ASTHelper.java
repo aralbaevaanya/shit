@@ -13,7 +13,7 @@ import static com.github.javaparser.ast.expr.BinaryExpr.Operator.*;
 import static com.github.javaparser.ast.expr.BinaryExpr.Operator.LESS;
 
 public class ASTHelper {
-    public Queue<NodeWithRestrictions> queue = new ArrayDeque<>();
+    private Queue<NodeWithRestrictions> queue = new ArrayDeque<>();
     public ArrayList<NodeWithRestrictions> res;
 
     public ASTHelper(Node node) {
@@ -21,7 +21,13 @@ public class ASTHelper {
         queue.add(new NodeWithRestrictions(node, new ArrayList<>()));
     }
 
-    public void process(NodeWithRestrictions node) {
+    public void process() {
+      while (queue.size() > 0) {
+        process(queue.poll());
+      }
+    }
+
+    private void process(NodeWithRestrictions node) {
         Node cloneNode = node.Node.clone();
         IfStmt stmt = cloneNode.findFirst(IfStmt.class).get();
 
@@ -70,7 +76,7 @@ public class ASTHelper {
 
     }
 
-    public void replace(Node parent, Node blockOld, Node blockNew, List<Expression> restrictions) {
+    private void replace(Node parent, Node blockOld, Node blockNew, List<Expression> restrictions) {
 
         blockOld.getParentNode().get().replace(blockOld, blockNew);
 
@@ -83,11 +89,11 @@ public class ASTHelper {
         }
     }
 
-    public Expression revert(Expression expression) {
+    private Expression revert(Expression expression) {
         return revert(expression.asBinaryExpr());
     }
 
-    public BinaryExpr revert(BinaryExpr exception) {
+    private BinaryExpr revert(BinaryExpr exception) {
         if (exception.getLeft().isNameExpr() || exception.getRight().isNameExpr()) {
             return new BinaryExpr(exception.getLeft(), exception.getRight(), revert(exception.getOperator()));
         } else {
@@ -95,7 +101,7 @@ public class ASTHelper {
         }
     }
 
-    public BinaryExpr.Operator revert(BinaryExpr.Operator op) {
+    private BinaryExpr.Operator revert(BinaryExpr.Operator op) {
         switch (op) {
             case OR -> {
                 return AND;
