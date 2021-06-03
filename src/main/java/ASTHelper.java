@@ -1,12 +1,12 @@
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 
 import static com.github.javaparser.ast.expr.BinaryExpr.Operator.*;
@@ -36,7 +36,7 @@ public class ASTHelper {
         var leftCondition = new ArrayList<Expression>();
         leftCondition.add(node.restrictions.isEmpty()
                 ? conditional
-                : new BinaryExpr(node.restrictions.get(0), conditional, AND));//to do optimize
+                : new BinaryExpr(node.restrictions.get(0), conditional, AND));
         var thenStmt = stmt.getThenStmt();
 
         if (thenStmt.findFirst(ReturnStmt.class).isPresent()) {
@@ -63,7 +63,7 @@ public class ASTHelper {
             ArrayList<Expression> rightCondition = new ArrayList<>();
             rightCondition.add(node.restrictions.isEmpty()
                     ? revert(conditional)
-                    : new BinaryExpr(node.restrictions.get(0), revert(conditional), AND));//to do optimize
+                    : new BinaryExpr(node.restrictions.get(0), revert(conditional), AND));
             var newNode = new NodeWithRestrictions(cloneNode1, rightCondition);
 
             if (newNode.Node.findFirst(IfStmt.class).isPresent()) {
@@ -76,7 +76,7 @@ public class ASTHelper {
 
     }
 
-    private void replace(Node parent, Node blockOld, Node blockNew, List<Expression> restrictions) {
+    private void replace(Node parent, Node blockOld, Node blockNew, ArrayList<Expression> restrictions) {
 
         blockOld.getParentNode().get().replace(blockOld, blockNew);
 
@@ -90,7 +90,7 @@ public class ASTHelper {
     }
 
     private Expression revert(Expression expression) {
-        return revert(expression.asBinaryExpr());
+        return new UnaryExpr(expression, UnaryExpr.Operator.LOGICAL_COMPLEMENT);
     }
 
     private BinaryExpr revert(BinaryExpr exception) {
